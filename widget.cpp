@@ -133,6 +133,11 @@ void Widget::keyPressEvent(QKeyEvent *event)
         if(!mylist.contains(event->key()))
             mylist.append(event->key());
     }
+    else if(event->key()==Qt::Key_W)
+    {
+        if(!mylist.contains(event->key()))
+            mylist.append(event->key());
+    }
 }
 
 void Widget::keyReleaseEvent(QKeyEvent *event)
@@ -151,15 +156,34 @@ void Widget::mariomove()
     {
         if(keycode==Qt::Key_D)
         {
+            if(mymario.x()>=970)
+            {
+                mymario.setX(970);
+            }
             right=(right+1)%21;
             mymario.setPixmap(mario_right[right].pixmap());
             mymario.moveBy(5,0);
         }
         else if(keycode==Qt::Key_A)
         {
+            if(mymario.x()<0)
+            {
+                mymario.setX(0);
+            }
             left=(left+1)%21;
             mymario.setPixmap(mario_left[left].pixmap());
             mymario.moveBy(-5,0);
+        }
+        if(keycode==Qt::Key_W)
+        {
+            for(int i=0;i<100;++i)
+            {
+                mymario.moveBy(0,5);
+            }
+            for(int i=0;i<100;++i)
+            {
+                mymario.moveBy(0,-5);
+            }
         }
     }
 }
