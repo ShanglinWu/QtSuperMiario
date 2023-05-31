@@ -4,6 +4,7 @@
 #include <QMainWindow>
 
 #include<configure.h>
+#include<widget.h>
 
 
 QT_BEGIN_NAMESPACE
@@ -20,7 +21,8 @@ public:
     ~MainWindow();
 
 public slots:
-        void when_configure_clicked(void);
+    void when_configure_clicked(void);
+    void when_start_clicked(void);
 
 private:
     Ui::MainWindow *ui;

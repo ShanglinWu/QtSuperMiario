@@ -11,15 +11,18 @@ CONFIG += c++17
 SOURCES += \
     configure.cpp \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    widget.cpp
 
 HEADERS += \
     configure.h \
-    mainwindow.h
+    mainwindow.h \
+    widget.h
 
 FORMS += \
     configure.ui \
-    mainwindow.ui
+    mainwindow.ui \
+    widget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -27,4 +30,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
+    res.qrc \
     untitle.qrc

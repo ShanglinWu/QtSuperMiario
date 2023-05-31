@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "widget.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -7,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     connect(ui->pushButton_2,SIGNAL(clicked(bool)),SLOT(when_configure_clicked()));
+    connect(ui->pushButton,SIGNAL(clicked(bool)),SLOT(when_start_clicked()));
 }
 
 MainWindow::~MainWindow()
@@ -20,3 +22,9 @@ void MainWindow::when_configure_clicked()
     conf->show();
 }
 
+void MainWindow::when_start_clicked()
+{
+    close();
+    Widget* w=new Widget();
+    w->show();
+}
