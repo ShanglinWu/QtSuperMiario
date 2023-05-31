@@ -113,6 +113,10 @@ Widget::Widget(QWidget *parent)
     mariomovetimer -> start(18);
     connect(mariomovetimer,&QTimer::timeout,this,&Widget::mariomove);
 
+    mariojumptimer = new QTimer();
+    mariojumptimer->start(1);
+    connect(mariojumptimer,&QTimer::timeout,this,&Widget::mariojump);
+
 }
 
 Widget::~Widget()
@@ -120,6 +124,14 @@ Widget::~Widget()
     delete ui;
 }
 static int right=0,left=0;
+
+static bool is_right=true;
+
+static bool jump=false;
+static bool moveblocked=false;
+double jumpspeed=50;
+static double jumphight=0;
+
 void Widget::keyPressEvent(QKeyEvent *event)
 {
     if(event->key()==Qt::Key_D)
@@ -156,6 +168,9 @@ void Widget::mariomove()
     {
         if(keycode==Qt::Key_D)
         {
+            if(moveblocked)
+                continue;
+            is_right=true;
             if(mymario.x()>=970)
             {
                 mymario.setX(970);
@@ -166,6 +181,9 @@ void Widget::mariomove()
         }
         else if(keycode==Qt::Key_A)
         {
+            if(moveblocked)
+                continue;
+            is_right=false;
             if(mymario.x()<0)
             {
                 mymario.setX(0);
@@ -174,18 +192,34 @@ void Widget::mariomove()
             mymario.setPixmap(mario_left[left].pixmap());
             mymario.moveBy(-5,0);
         }
-        if(keycode==Qt::Key_W)
+        else if(keycode==Qt::Key_W)
         {
-            for(int i=0;i<100;++i)
-            {
-                mymario.moveBy(0,5);
-            }
-            for(int i=0;i<100;++i)
-            {
-                mymario.moveBy(0,-5);
-            }
+            jump=true;
+            moveblocked=true;
         }
+
+
     }
 }
 
+void Widget::mariojump()
+{
+    if(jump)
+    {
+        jumpspeed=jumpspeed-9.8*0.015;
+        mymario.moveBy(0,-jumpspeed*0.015);
+        if(is_right)
+            mymario.moveBy(0.2,0);
+        else
+            mymario.moveBy(-0.2,0);
+        jumphight+=jumpspeed*0.015;
+    }
+    if(jumphight<=0)
+    {
+        jump=false;
+        jumpspeed=50;
+        jumphight=0;
+        moveblocked=false;
+    }
+}
 

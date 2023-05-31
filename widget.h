@@ -22,6 +22,7 @@ public:
     void keyPressEvent(QKeyEvent* event);
     void keyReleaseEvent(QKeyEvent* event);
     void mariomove();
+    void mariojump();
 
 private:
     Ui::Widget *ui;
@@ -35,6 +36,7 @@ private:
     QGraphicsPixmapItem brick[100];
     QGraphicsPixmapItem castle;
     QTimer* mariomovetimer;
+    QTimer* mariojumptimer;
     QList<int> mylist;
 };
 #endif // WIDGET_H
