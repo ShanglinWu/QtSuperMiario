@@ -7,7 +7,10 @@
 #include<QGraphicsScene>//场景
 #include<QKeyEvent>
 #include<QList>
-#include<mainwindow.h>
+#include"mainwindow.h"
+#include "configure.h"
+#include <QSoundEffect>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
 QT_END_NAMESPACE
@@ -23,6 +26,11 @@ public:
     void keyReleaseEvent(QKeyEvent* event);
     void mariomove();
     void mariojump();
+    void enemymove();
+    bool moveCollision();
+    bool jumpCollision();
+    void marioDie();
+    void show_gameover();
 
 private:
     Ui::Widget *ui;
@@ -37,6 +45,23 @@ private:
     QGraphicsPixmapItem castle;
     QTimer* mariomovetimer;
     QTimer* mariojumptimer;
+    QTimer* diemovetimer;
+    QTimer* gameovertimer;
+
+    //记录keyevent
     QList<int> mylist;
+
+    //跳跃相关
+    QSoundEffect * jumpSound;
+    bool is_first=false;
+
+    //enemy
+    QGraphicsPixmapItem enemy[3];
+    QTimer *enemymovetimer;
+    QPixmap enemy_left_ph;
+    QPixmap enemy_right_ph;
+    int enemy_dir[3]={0};
+
+
 };
 #endif // WIDGET_H

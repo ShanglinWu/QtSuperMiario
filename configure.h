@@ -3,7 +3,8 @@
 
 #include <QWidget>
 
-#include <mainwindow.h>
+#include "mainwindow.h"
+#include "widget.h"
 
 namespace Ui {
 class configure;
@@ -18,6 +19,8 @@ public:
     ~configure();
 
 public slots:
+    void when_voice_clicked(void);
+    void when_music_clicked(void);
 
 private:
     Ui::configure *ui;

@@ -53,5 +53,31 @@
         <file>mario_right/walk_right19.png</file>
         <file>mario_right/walk_right20.png</file>
         <file>mario_right/walk_right21.png</file>
+        <file>photo/master_0.png</file>
+        <file>photo/master_1.png</file>
+        <file>photo/background4.jpg</file>
+        <file>photo/end.png</file>
+        <file>photo/flag2.png</file>
+        <file>photo/gameover.png</file>
+    </qresource>
+    <qresource prefix="/audio">
+        <file>sound/begin.wav</file>
+        <file>sound/big_jump.wav</file>
+        <file>sound/brick_smash.wav</file>
+        <file>sound/bump.wav</file>
+        <file>sound/coin.wav</file>
+        <file>sound/count_down.wav</file>
+        <file>sound/fireball.wav</file>
+        <file>sound/kick.wav</file>
+        <file>sound/main_theme_sped_up - instance.wav</file>
+        <file>sound/main_theme_sped_up.wav</file>
+        <file>sound/one_up.wav</file>
+        <file>sound/pipe.wav</file>
+        <file>sound/powerup_appears.wav</file>
+        <file>sound/powerup.wav</file>
+        <file>sound/small_jump.wav</file>
+        <file>sound/stomp.wav</file>
+        <file>sound/death.wav</file>
+        <file>sound/game_over.wav</file>
     </qresource>
 </RCC>

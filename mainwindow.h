@@ -3,9 +3,9 @@
 
 #include <QMainWindow>
 
-#include<configure.h>
-#include<widget.h>
-
+#include "configure.h"
+#include "widget.h"
+#include <QSoundEffect>>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,8 +23,10 @@ public:
 public slots:
     void when_configure_clicked(void);
     void when_start_clicked(void);
+    //void when_music_clicked(void);
 
 private:
     Ui::MainWindow *ui;
+    QSoundEffect * startSound;
 };
 #endif // MAINWINDOW_H
