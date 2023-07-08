@@ -7,5 +7,8 @@ MusicPlayer *musicPlayer = new MusicPlayer;
 QString bgmusic=":/audio/sound/main_theme_sped_up - instance.wav";
 QString jumpsound=":/audio/sound/small_jump.wav";
 QString diedsound=":/audio/sound/death.wav";
-
+int sky_length=1500;
+int mario_height=43;
+int ground_length=1600;
+int master_height=43;
 #endif // GLOBAL_CPP

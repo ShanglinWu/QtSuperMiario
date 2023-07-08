@@ -59,6 +59,10 @@
         <file>photo/end.png</file>
         <file>photo/flag2.png</file>
         <file>photo/gameover.png</file>
+        <file>photo/brick3.png</file>
+        <file>photo/brick2.png</file>
+        <file>photo/pipe_long.png</file>
+        <file>photo/unknown_stay.png</file>
     </qresource>
     <qresource prefix="/audio">
         <file>sound/begin.wav</file>
@@ -79,5 +83,6 @@
         <file>sound/stomp.wav</file>
         <file>sound/death.wav</file>
         <file>sound/game_over.wav</file>
+        <file>photo/ground.png</file>
     </qresource>
 </RCC>

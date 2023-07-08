@@ -10,6 +10,8 @@ CONFIG += c++17
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    brick.cpp \
+    cannibal.cpp \
     configure.cpp \
     enemy.cpp \
     gameover.cpp \
@@ -17,15 +19,19 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     musicplayer.cpp \
+    unknown.cpp \
     widget.cpp
 
 HEADERS += \
+    brick.h \
+    cannibal.h \
     configure.h \
     enemy.h \
     gameover.h \
     global.h \
     mainwindow.h \
     musicplayer.h \
+    unknown.h \
     widget.h
 
 FORMS += \
