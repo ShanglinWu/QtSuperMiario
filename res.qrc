@@ -63,6 +63,10 @@
         <file>photo/brick2.png</file>
         <file>photo/pipe_long.png</file>
         <file>photo/unknown_stay.png</file>
+        <file>photo/score.png</file>
+        <file>photo/single_coin.png</file>
+        <file>photo/rainbow.png</file>
+        <file>photo/background1.jpg</file>
     </qresource>
     <qresource prefix="/audio">
         <file>sound/begin.wav</file>

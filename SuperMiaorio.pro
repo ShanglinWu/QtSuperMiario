@@ -18,9 +18,11 @@ SOURCES += \
     global.cpp \
     main.cpp \
     mainwindow.cpp \
+    massroom.cpp \
     musicplayer.cpp \
     unknown.cpp \
-    widget.cpp
+    widget.cpp \
+    win.cpp
 
 HEADERS += \
     brick.h \
@@ -30,15 +32,18 @@ HEADERS += \
     gameover.h \
     global.h \
     mainwindow.h \
+    massroom.h \
     musicplayer.h \
     unknown.h \
-    widget.h
+    widget.h \
+    win.h
 
 FORMS += \
     configure.ui \
     gameover.ui \
     mainwindow.ui \
-    widget.ui
+    widget.ui \
+    win.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

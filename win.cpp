@@ -1,25 +1,22 @@
-#include "gameover.h"
-#include "ui_gameover.h"
+#include "win.h"
+#include "ui_win.h"
 #include "widget.h"
-#include "musicplayer.h"
-#include "global.h"
 
-gameover::gameover(QWidget *parent) :
+win::win(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::gameover)
+    ui(new Ui::win)
 {
     ui->setupUi(this);
     connect(ui->pushButton,SIGNAL(clicked()),SLOT(when_restart_clicked()));
     connect(ui->pushButton_2,SIGNAL(clicked()),SLOT(close()));
 }
 
-gameover::~gameover()
+win::~win()
 {
     delete ui;
 }
 
-
-void gameover::when_restart_clicked()
+void win::when_restart_clicked()
 {
     close();
     Widget* w=new Widget();

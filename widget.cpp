@@ -3,9 +3,56 @@
 #include "global.h"
 #include "gameover.h"
 #include "unknown.h"
+#include "win.h"
 #include<QKeyEvent>
 #include<QTimer>
 #include<QDebug>
+#include<QPainter>
+
+//参数变量
+//死亡状态
+bool undefeatable=false;
+bool died=false;
+bool kill[7]={false};
+bool first_die[7]={true,true,true,true,true,true,true};
+bool brick_break[67]={false};
+bool unk_break[5]={false};
+int first_break[67]={true,true,true,true,true,true,true,true,true,true
+                       ,true,true,true,true,true,true,true,true,true,true
+                       ,true,true,true,true,true,true,true,true,true,true
+                       ,true,true,true,true,true,true,true,true,true,true
+                       ,true,true,true,true,true,true,true,true,true,true
+                       ,true,true,true,true,true,true,true,true,true,true
+                       ,true,true,true,true,true,true,true};
+int unk_first_break[5]={true};
+//跳跃和行进参数
+static int right=0,left=0;
+static bool is_right=true;
+static bool jump=false;
+static bool is_first=false;
+static bool moveblocked=false;
+double jumpspeed=60;
+double die_jump_speed=50;
+double brick_jump_speed[67]={0};
+static double jumphight=0;
+//
+static bool right_block=false;
+static bool left_block=false;
+static bool brick_right_block=false;
+static bool brick_left_block=false;
+
+//
+static bool on_brick[67]={false};
+static bool on_unknown[5]={false};
+static bool on_cannibal[3]={false};
+static bool mfall=false;
+double fallspeed=0;
+
+//
+static int score=0;
+static int coin=0;
+//
+static bool winf=false;
 
 Widget::Widget(QWidget *parent)
     : QWidget(parent)
@@ -21,6 +68,9 @@ Widget::Widget(QWidget *parent)
     //设置背景图片、并添加到场景（越早添加的，在越底下）
     mBackGround1.setPixmap(QPixmap(":/img/photo/sky.png"));
     mScene.addItem(&mBackGround1);
+
+
+
 
     //设置mario原始图片、初始位置
     mymario.setPixmap(QPixmap(":/img/mario_right/walk_right1.png"));
@@ -75,6 +125,10 @@ Widget::Widget(QWidget *parent)
     //设置城堡图片、大小、初始位置
     castle.setPixmap(QPixmap(":/img/photo/castle.png").scaled(130,130));
     castle.setPos(3290,140);
+    rainbow.setPixmap(QPixmap(":/img/photo/rainbow.png").scaled(60,60));
+    rainbow.setPos(3290,200);
+
+
     double enemy_pos[7][2]={{600,508},{800,508},{1600,508},{1800,508},{2000,508},{3300,508},{3500,508}};
     for(int i=0;i<7;i++)
         enemy_master[i].enemy_init(&mScene,enemy_pos[i][0],enemy_pos[i][1]);
@@ -86,7 +140,7 @@ Widget::Widget(QWidget *parent)
                           {2535,446},{2570,446},{2385,411},{2420,411},{2500,411},{2535,411},{2420,376},{2500,376},{2800,400},
                           {2835,400},{2870,400},{2935,270},{2970,270},{3005,270},{3040,270},{3075,270},{3265,270},{3300,270},
                           {3335,270},{3370,270},{3405,270}};
-    double unk_pos[5][2]={{810,270},{1840,270},{915,400},{2085,400},{2905,400}};
+    double unk_pos[5][2]={{845,270},{1770,270},{950,400},{2155,400},{3010,400}};
     for(int i=0;i<67;i++)
         bricks[i].brick_init(&mScene,brk_pos[i][0],brk_pos[i][1]);
     for(int i=0;i<5;++i)
@@ -112,6 +166,10 @@ Widget::Widget(QWidget *parent)
     //图片添加到场景,需要给一个地址，取地址
     mScene.addItem(&castle);
     mScene.addItem(&mymario);
+    mScene.addItem(&rainbow);
+
+    //记分栏
+    draw_score_board();
 
     //设置视图场景
     mGameView.setScene(&mScene);
@@ -120,29 +178,10 @@ Widget::Widget(QWidget *parent)
     mGameView.setParent(this);
     mGameView.show();
 
-    //按键事件
-    mariomovetimer = new QTimer();
-    mariomovetimer -> start(18);
-    connect(mariomovetimer,&QTimer::timeout,this,&Widget::mariomove);
+//    QPainter painter(this);
+//    painter.drawPixmap(600, 200, QPixmap(":/img/photo/coin.png"), 0, 0, 30, 30);
 
-    mariojumptimer = new QTimer();
-    mariojumptimer->start(1);
-    connect(mariojumptimer,&QTimer::timeout,this,&Widget::mariojump);
 
-    //敌人移动
-    enemymovetimer=new QTimer();
-    enemymovetimer->start(30);
-    connect(enemymovetimer,&QTimer::timeout,this,&Widget::enemymove);
-
-    //mario死亡
-    diemovetimer=new QTimer();
-    diemovetimer->start(1);
-    connect(diemovetimer,&QTimer::timeout,this,&Widget::Die);
-//    connect(diemovetimer,&QTimer::timeout,this,&Widget::mariofall);
-
-    gameovertimer=new QTimer();
-    connect(gameovertimer,&QTimer::timeout,this,&Widget::show_gameover);
-    gameovertimer->setSingleShot(true);
 }
 
 Widget::~Widget()
@@ -152,43 +191,7 @@ Widget::~Widget()
 
 
 
-//死亡状态
-bool undefeatable=false;
-bool died=false;
-bool kill[7]={false};
-bool first_die[7]={true,true,true,true,true,true,true};
-bool brick_break[67]={false};
-bool unk_break[5]={false};
-int first_break[67]={true,true,true,true,true,true,true,true,true,true
-                    ,true,true,true,true,true,true,true,true,true,true
-                    ,true,true,true,true,true,true,true,true,true,true
-                    ,true,true,true,true,true,true,true,true,true,true
-                    ,true,true,true,true,true,true,true,true,true,true
-                    ,true,true,true,true,true,true,true,true,true,true
-                    ,true,true,true,true,true,true,true};
-int unk_first_break[5]={true};
-//跳跃和行进参数
-static int right=0,left=0;
-static bool is_right=true;
-static bool jump=false;
-static bool is_first=false;
-static bool moveblocked=false;
-double jumpspeed=60;
-double die_jump_speed=50;
-double brick_jump_speed[67]={0};
-static double jumphight=0;
-//
-static bool right_block=false;
-static bool left_block=false;
-static bool brick_right_block=false;
-static bool brick_left_block=false;
 
-//
-static bool on_brick[67]={false};
-static bool on_unknown[5]={false};
-static bool on_cannibal[3]={false};
-static bool mfall=false;
-double fallspeed=0;
 
 void Widget::game_init(){
     undefeatable=false;
@@ -211,6 +214,8 @@ void Widget::game_init(){
     die_jump_speed=50;
     memset(brick_jump_speed,0, sizeof(brick_jump_speed));
     jumphight=0;
+    score=0;
+    coin=0;
     //
     right_block=false;
     left_block=false;
@@ -222,6 +227,39 @@ void Widget::game_init(){
     memset(on_cannibal,false, sizeof(on_cannibal));
     mfall=false;
     fallspeed=0;
+
+    winf=false;
+
+    musicPlayer->backMusicPlay(bgmusic);
+
+    //按键事件
+    mariomovetimer = new QTimer();
+    mariomovetimer -> start(18);
+    connect(mariomovetimer,&QTimer::timeout,this,&Widget::mariomove);
+
+    mariojumptimer = new QTimer();
+    mariojumptimer->start(1);
+    connect(mariojumptimer,&QTimer::timeout,this,&Widget::mariojump);
+
+    //敌人移动
+    enemymovetimer=new QTimer();
+    enemymovetimer->start(30);
+    connect(enemymovetimer,&QTimer::timeout,this,&Widget::enemymove);
+
+    //mario死亡
+    diemovetimer=new QTimer();
+    diemovetimer->start(1);
+    connect(diemovetimer,&QTimer::timeout,this,&Widget::Die);
+    //    connect(diemovetimer,&QTimer::timeout,this,&Widget::mariofall);
+
+    //    //信息绘制
+    //    drawtimer=new QTimer();
+    //    drawtimer->start(18);
+    //    connect(drawtimer,&QTimer::timeout,this,&Widget::draw);
+
+    gameovertimer=new QTimer();
+    connect(gameovertimer,&QTimer::timeout,this,&Widget::show_gameover);
+    gameovertimer->setSingleShot(true);
 }
 
 void Widget::keyPressEvent(QKeyEvent *event)
@@ -264,6 +302,7 @@ void Widget::mariomove()
         brick_collison();//加一个碰壁
         unknownCollision();
         check_block();
+        win_check();
         if(keycode==Qt::Key_D)
         {
             if(moveblocked)
@@ -326,6 +365,7 @@ void Widget::mariojump()
         //qDebug()<<jumpspeed;
         jumpspeed=jumpspeed-9.8*0.015;
         mymario.moveBy(0,-jumpspeed*0.015);
+        win_check();
         for(int keycode : mylist)
         {
             check_block();
@@ -475,6 +515,9 @@ void Widget::jumpCollision()
                 jumpspeed=-jumpspeed*0.7;
                 fallspeed=-fallspeed;
                 kill[i]=true;
+                musicPlayer->play(killsound);
+                score+=10;
+                draw_score_board();
                 undefeatable=true;
         }
     }
@@ -487,7 +530,7 @@ void Widget::Die()
     {
         die_jump_speed=die_jump_speed-9.8*0.01;
         mymario.moveBy(0,-die_jump_speed*0.01);
-        //qDebug("die jump");
+        qDebug("die jump");
         if(die_jump_speed<=-150)//调数
         {
             died=false;
@@ -528,8 +571,11 @@ void Widget::Die()
 
 void Widget::show_gameover()
 {
+    musicPlayer->stopPlayBGM();
     close();
     died=false;
+    killTimer(mariojumptimer->timerId());
+    killTimer(mariomovetimer->timerId());
     gameover* g=new gameover();
     g->show();
 }
@@ -543,6 +589,7 @@ void Widget::background_move(double step)
         ground2.moveBy(-step,0);
         ground3.moveBy(-step,0);
         castle.moveBy(-step,0);
+        rainbow.moveBy(-step,0);
         for(int i=0;i<7;i++)
             enemy_master[i].move(-step,0);
         for(int i=0;i<67;i++)
@@ -564,6 +611,7 @@ void Widget::background_move(double step)
         ground2.moveBy(step,0);
         ground3.moveBy(step,0);
         castle.moveBy(step,0);
+        rainbow.moveBy(step,0);
         for(int i=0;i<7;i++)
             enemy_master[i].move(step,0);
         for(int i=0;i<67;i++)
@@ -586,15 +634,19 @@ void Widget::brick_collison()
     for(int i=0;i<67;i++)
     {
         if((mymario.x()-bricks[i].x<=25 && mymario.x()-bricks[i].x>=-30)
-            && (mymario.y()-bricks[i].y<=32 && mymario.y()-bricks[i].y>=30))
+            && (mymario.y()-bricks[i].y<=32 && mymario.y()-bricks[i].y>=30)
+            &&(!died))
         {
             if(first_break[i]&&jumpspeed>0)
             {
                 bricks[i].broken();
+                musicPlayer->play(bricksound);
                 jumpspeed=-jumpspeed;
                 qDebug()<<mymario.x()<<' '<<mymario.y();
                 first_break[i]=false;
                 brick_break[i]=true;
+                score+=5;
+                draw_score_board();
             }
         }
         else if((mymario.x()-bricks[i].x<=25 && mymario.x()-bricks[i].x>=-30)
@@ -619,14 +671,19 @@ void Widget::unknownCollision()
     for(int i=0;i<5;i++)
     {
         if((mymario.x()-unknowns[i].x<=25 && mymario.x()-unknowns[i].x>=-30)
-            && (mymario.y()-unknowns[i].y<=32 && mymario.y()-unknowns[i].y>=30))
+            && (mymario.y()-unknowns[i].y<=32 && mymario.y()-unknowns[i].y>=30)
+            && (!died))
         {
             if(jumpspeed>0)
             {
                 if(unk_first_break[i]){
-                    unknowns[i].broken();
+                    unknowns[i].broken(&mScene,i);
+                    coin++;
                     unk_first_break[i]=false;
                     unk_break[i]=true;
+                    score+=10;
+                    musicPlayer->play(coinsound);
+                    draw_score_board();
                 }
                 jumpspeed=-jumpspeed;
                 qDebug()<<mymario.x()<<' '<<mymario.y();
@@ -842,3 +899,42 @@ void Widget::check_block()
             }
     }
 }
+
+void Widget::draw_score_board()
+{
+    //score
+    scoreboard.setPixmap(QPixmap(":/img/photo/score.png").scaled(30,30));
+    scoreboard.setPos(20,20);
+    mScene.addItem(&scoreboard);
+    score_text.setPlainText(QVariant(score).toString());
+    score_text.setPos(50, 10);
+    score_text.setFont(QFont("Arial", 50));
+    mScene.addItem(&score_text);
+
+    //coin
+    coinboard.setPixmap(QPixmap(":/img/photo/single_coin.png").scaled(50,50));
+    coinboard.setPos(500,20);
+    mScene.addItem(&coinboard);
+    coin_text.setPlainText(QVariant(coin).toString());
+    coin_text.setPos(550, 10);
+    coin_text.setFont(QFont("Arial", 50));
+    mScene.addItem(&coin_text);
+}
+
+void Widget::win_check()
+{
+    if(winf)
+            return;
+    if( (mymario.x()>(castle.x()-20)) && (mymario.x()<(castle.x()+20)) &&
+        (mymario.y()>(castle.y()-20)) && (mymario.y()<(castle.y()+40))){
+        winf=true;
+        close();
+        died=false;
+        killTimer(mariojumptimer->timerId());
+        killTimer(mariomovetimer->timerId());
+        win* w=new win();
+        w->show();
+    }
+}
+
+

@@ -6,7 +6,11 @@
 extern MusicPlayer *musicPlayer;
 extern QString bgmusic;
 extern QString jumpsound;
+extern QString coinsound;
 extern QString diedsound;
+extern QString bricksound;
+extern QString killsound;
+
 extern int mario_height;
 extern int sky_length;
 extern int ground_length;

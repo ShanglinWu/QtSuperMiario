@@ -11,7 +11,7 @@ public:
 
     void Unknown_Init(QGraphicsScene *scene, double xx, double yy);
     void move(double xx,double yy);
-    void broken();
+    void broken(QGraphicsScene *scene,int id);
 
 
     int length;

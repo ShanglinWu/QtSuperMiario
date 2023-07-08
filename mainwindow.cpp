@@ -31,6 +31,7 @@ void MainWindow::when_configure_clicked()
 void MainWindow::when_start_clicked()
 {
     close();
+    musicPlayer->stopPlayBGM();
     Widget* w=new Widget();
     w->show();
 }
